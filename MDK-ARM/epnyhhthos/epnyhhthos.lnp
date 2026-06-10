@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+"epnyhhthos\startup_stm32f103xb.o"
+"epnyhhthos\led.o"
+"epnyhhthos\main.o"
+"epnyhhthos\gpio.o"
+"epnyhhthos\tim.o"
+"epnyhhthos\stm32f1xx_it.o"
+"epnyhhthos\stm32f1xx_hal_msp.o"
+"epnyhhthos\stm32f1xx_hal_gpio_ex.o"
+"epnyhhthos\stm32f1xx_hal_tim.o"
+"epnyhhthos\stm32f1xx_hal_tim_ex.o"
+"epnyhhthos\stm32f1xx_hal.o"
+"epnyhhthos\stm32f1xx_hal_rcc.o"
+"epnyhhthos\stm32f1xx_hal_rcc_ex.o"
+"epnyhhthos\stm32f1xx_hal_gpio.o"
+"epnyhhthos\stm32f1xx_hal_dma.o"
+"epnyhhthos\stm32f1xx_hal_cortex.o"
+"epnyhhthos\stm32f1xx_hal_pwr.o"
+"epnyhhthos\stm32f1xx_hal_flash.o"
+"epnyhhthos\stm32f1xx_hal_flash_ex.o"
+"epnyhhthos\stm32f1xx_hal_exti.o"
+"epnyhhthos\system_stm32f1xx.o"
+--strict --scatter "epnyhhthos\epnyhhthos.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "epnyhhthos.map" -o epnyhhthos\epnyhhthos.axf
