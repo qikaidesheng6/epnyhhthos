@@ -201,6 +201,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM2 global interrupt.
   */
 void TIM2_IRQHandler(void)
@@ -216,24 +230,30 @@ void TIM2_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 #include "led.h"
+volatile uint8_t mode = 0; 
 
-
-static uint32_t key_tick = 0;
-
-// ???1ms?? ? LED??
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    if(htim->Instance == TIM2)
-    {
-       ;
-    }
-}
-
-// ?????? PA5
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    
-        
-    
+   
+  static uint32_t last_tick = 0;
+    uint32_t now = HAL_GetTick();
+
+    if (GPIO_Pin == GPIO_PIN_5)
+    {
+        /* 1️⃣ 1 秒内不重复响应（消抖 + 防连击） */
+        if (now - last_tick < 1000)
+            return;
+
+        /* 2️⃣ 只在“按下”时响应（3.3V 按键） */
+        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET)
+        {
+            mode++;
+            if (mode >= 5) mode = 0;
+
+            last_tick = now;   // ✅ 只有成功切换才锁
+        }
+    }
+
 }
+
 /* USER CODE END 1 */

@@ -63,12 +63,7 @@ void LED_FlowOn_AllOn_FlowOff(void)
 
 void LED_FlowAndFlash(void)
 {
-    /* 1. 依次点亮所有LED */
-    for (int i = 0; i < LED_NUM; i++)
-    {
-        HAL_GPIO_WritePin(leds[i].port, leds[i].pin, LED_ON);
-        HAL_Delay(60);
-    }
+
 
     /* 2. 全亮 */
     for (int i = 0; i < LED_NUM; i++)
@@ -134,6 +129,7 @@ void LED_Breath(void)
     }
   }
 }
+
 
 /* ================= LED ??? ================= */
 void LED_Init(void)

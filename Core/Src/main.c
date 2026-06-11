@@ -38,7 +38,11 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-static uint8_t flowCount = 0;
+
+
+
+
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -55,7 +59,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern volatile uint8_t mode;  // 模式编号：0=呼吸 1=流水 2=逐个亮→全亮→逐个灭 3=流水+闪烁 4=全亮
 /* USER CODE END 0 */
 
 /**
@@ -92,26 +96,47 @@ int main(void)
 
 LED_Init();
 
-  /* USER CODE END 2 */
-	
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5); // ✅ 清上电误触发
 
+
+  /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 		
-		LED_Breath();
-		
- /*   LED_Flow();
-    if (++flowCount >= 24)
-    {
-        flowCount = 0;
-        LED_FlowOn_AllOn_FlowOff();
-        LED_FlowAndFlash();
-    }
 
-    HAL_Delay(150);  */
+ 
+    // 主循环只管执行当前模式，中断负责加模式数
+    switch(mode)
+    {
+        case 0: LED_Breath(); break;//呼吸
+        case 1: LED_Flow();HAL_Delay(100); break;//流水
+        case 2: LED_FlowOn_AllOn_FlowOff(); break;//完全点亮并完全消失
+        case 3: LED_FlowAndFlash(); break;//闪烁三次
+        case 4:
+            for(int i = 0; i < LED_NUM; i++)
+                HAL_GPIO_WritePin(leds[i].port, leds[i].pin, LED_ON);//保持全亮
+            HAL_Delay(100);
+            break;
+    }
+		
+	/*	switch(current_mode)
+    {
+        case 0:
+            HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+            HAL_Delay(2000);
+            break;
+
+        case 1:
+            HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+            HAL_Delay(1000);
+            break;
+
+        default:
+            break;
+			}*/
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

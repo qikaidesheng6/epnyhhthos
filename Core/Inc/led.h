@@ -45,6 +45,9 @@
 // 2 = 慢速; 4 = 中速; 8 = 快速; 16 = 很快
 #define BREATH_STEP 6
 
+// 按键模式总数（中断和主循环共用）
+#define MODE_MAX  5
+
 
 /* ================= ??? LED ??(??) ================= */
 
@@ -78,4 +81,5 @@ void LED_AllOff(void);    // ????
 void LED_FlowAndFlash(void);  
 void LED_FlowOn_AllOn_FlowOff(void);
 void LED_Breath(void);
+void LED_Breath_Step(void);
 #endif
