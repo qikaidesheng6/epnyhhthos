@@ -248,7 +248,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) == GPIO_PIN_SET)
         {
             mode++;
-            if (mode >= 5) mode = 0;
+            if (mode >= 6) mode = 0;
 
             last_tick = now;   // ✅ 只有成功切换才锁
         }

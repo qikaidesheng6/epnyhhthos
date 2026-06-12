@@ -98,7 +98,12 @@ LED_Init();
 
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5); // ✅ 清上电误触发
 
-
+static uint8_t auto_sub_mode = 1;
+static uint16_t flow_cnt = 0;  // 流水灯执行计数器
+#define FLOW_RUN_TIMES 24
+// 新增：每个模式保持时长(ms)，按需修改
+#define MODE_HOLD_TIME 800    
+static uint16_t hold_tick = 0;  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,21 +112,72 @@ LED_Init();
   {
 		
 
- 
+ if(mode == 0)
+    {
+        // mode=0：自动循环 1~5 所有模式
+        switch(auto_sub_mode)
+        {
+            case 1:
+                LED_Breath();
+                // 每个模式跑完切下一个子模式
+						 hold_tick++;
+            // 延时结束再切换模式
+            if(hold_tick >= MODE_HOLD_TIME)
+            {
+                auto_sub_mode = 2;
+                hold_tick = 0;    // 清空计时
+                flow_cnt = 0;     // 流水计数清零
+            }
+            HAL_Delay(1); 
+                break;
+            case 2:
+                LED_Flow();
+                HAL_Delay(100);
+						 flow_cnt++; 
+             if(flow_cnt >= FLOW_RUN_TIMES)
+                {
+                    auto_sub_mode = 3;
+                    flow_cnt = 0; // 计数清零，留给后续模式使用
+                }
+                break;
+            case 3:
+                LED_FlowOn_AllOn_FlowOff();
+                auto_sub_mode = 4;
+                break;
+            case 4:
+                LED_FlowAndFlash();
+                auto_sub_mode = 5;
+                break;
+            case 5:
+                for(int i = 0; i < LED_NUM; i++)
+                    HAL_GPIO_WritePin(leds[i].port, leds[i].pin, LED_ON);
+             hold_tick++;
+            if(hold_tick >= MODE_HOLD_TIME)
+            {
+                auto_sub_mode = 1;
+                hold_tick = 0;
+            }
+            HAL_Delay(1);
+                break;
+        }
+    }
+    else
+    {
     // 主循环只管执行当前模式，中断负责加模式数
     switch(mode)
     {
-        case 0: LED_Breath(); break;//呼吸
-        case 1: LED_Flow();HAL_Delay(100); break;//流水
-        case 2: LED_FlowOn_AllOn_FlowOff(); break;//完全点亮并完全消失
-        case 3: LED_FlowAndFlash(); break;//闪烁三次
-        case 4:
+		
+        case 1: LED_Breath(); break;//呼吸
+        case 2: LED_Flow();HAL_Delay(100); break;//流水
+        case 3: LED_FlowOn_AllOn_FlowOff(); break;//完全点亮并完全消失
+        case 4: LED_FlowAndFlash(); break;//闪烁三次
+        case 5:
             for(int i = 0; i < LED_NUM; i++)
                 HAL_GPIO_WritePin(leds[i].port, leds[i].pin, LED_ON);//保持全亮
             HAL_Delay(100);
             break;
     }
-		
+	}
 	/*	switch(current_mode)
     {
         case 0:
